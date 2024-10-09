@@ -1,0 +1,838 @@
+
+                          termina la operación. Esta opción no tiene efecto si se 
+                          utiliza la opción --silent.
+    --dontmerge           No procesa los conflictos de fichero. El resto de cambios
+                          se procesan con normalidad. Esta opción puede ser útil en
+                          automatización para evitar interacción con el usuario.
+    --machinereadable     Muestra el resultado en un formato fácil de parsear.
+    --startlineseparator  Usado con '--machinereadable', indica cómo deben
+                          empezar las líneas del resultado.
+    --endlineseparator    Usado con '--machinereadable', indica cómo deben
+                          terminar las líneas del resultado.
+    --fieldseparator      Usado con '--machinereadable', indica cómo deben
+                          separarse los campos de cada línea resultante.
+
+
+== CMD_HELP_PARTIAL_UPDATE ==
+Notas:
+
+    El comando update actualiza los ficheros desactualizados.
+
+    El comando update siempre asume recursividad.
+
+    Si todas las rutas especificadas son ficheros dentro del mismo xlink y
+    se usa la opción --changeset, entonces las versiones a actualizar se buscan
+    dentro del changeset del repositorio del xlink.
+
+Ejemplos:
+
+    cm partial update
+    (Actualiza todo el espacio de trabajo parcial.)
+
+    cm partial update .
+    (Actualiza todos los hijos del directorio actual.)
+
+    cm partial update fichero1.txt
+    (Actualiza el fichero fichero1.txt.)
+
+    cm partial update fichero1.txt fichero2.txt
+    (Actualiza los ficheros fichero1.txt y fichero2.txt.)
+
+    cm partial update src --report
+    (Actualiza todos los hijos del directorio src, mostrando una lista de los
+    cambios aplicados al finalizar.)
+
+    cm partial update src --changeset=4
+    (Actualiza todos los hijos del directorio src, al contenido
+    que cargaban en el changeset 4.)
+    
+    cm partial update xlink/first.png --changeset=4
+    (Actualiza el fichero xlink/first.png al contenido que cargaba en el
+    changeset 4 del repositorio del xlink.)
+	
+    cm partial update . --changeset=2 --xml=output.xml 2>errors.txt 
+    (Actualiza todos los hijos del directorio actual al contenido que cargaba en el
+    changeset 2 del repositorio e informa del resultado en formato XML. La salida 
+    la almacena en un archivo output.xml y los potenciales errores los redirige 
+    al archivo errors.txt.
+    NOTA: la redirección puede variar dependiendo de la consola empleada.)
+
+== CMD_DESCRIPTION_PATCH ==
+Genera un parche a partir de una spec o aplica un parche generado en el workspace actual.
+
+== CMD_USAGE_PATCH ==
+Sintaxis:
+
+    cm patch [source_spec] source_spec
+                        [--output=output_file] [--tool=/path/to/diff]
+
+    cm patch --apply patch_file [--tool=/path/to/patch]
+
+    source_spec         Especificación de rama o changeset
+    output_file         Fichero que contendrá la salida del comando. Se
+                        mostrará en pantalla si no se especifica.
+
+Opciones:
+
+    --output            Indica el fichero de destino para almacenar los
+                        contenidos del parche.
+    --tool              Especifica la ruta hacia la herramienta necesaria para
+                        ejecutar la operación (diff o patch).
+
+== CMD_HELP_PATCH ==
+Notas:
+
+    Este comando genera un fichero patch que contiene las diferencias de una
+    rama o un changeset, así como las diferencias entre changesets. Encuentra
+    diferencias para ficheros tanto de texto como binarios.
+
+    El parámetro --apply permite aplicar los contenidos de un fichero patch 
+    en el workspace actual.
+
+Limitaciones:
+
+    Si el fichero de salida de patch ya existe, el comando no lo
+    sobreescribirá.
+
+    Si el fichero con modificaciones en el patch no existe, el comando no
+    creará uno nuevo para aplicar los cambios.
+
+Importante:
+
+    Este comando requiere las utilidades Diff y Patch, disponibles
+    en http://gnuwin32.sourceforge.net/packages/patch.htm y 
+    http://gnuwin32.sourceforge.net/packages/diffutils.htm
+    
+    Tras su instalación se recomienda agregar su ubicación a la variable
+    de entorno PATH.
+
+Ejemplos:
+
+    cm patch cs:4@default@localhost:8084
+    (Muestra en pantalla las diferencias del changeset 4 en formato patch.)
+
+    cm patch br:/main --output=file.patch
+    (Obtiene un fichero file.patch con las diferencias de la rama "main".)
+
+    cm patch br:/main --output=file.patch --tool=C:\gnu\diff.exe
+    (Misma operación con un ejecutable indicado explícitamente.)
+    
+    cm patch cs:2@default cs:4@default
+    (Muestra en pantalla las diferencias entre los changeset 2 y 4.)
+
+    cm patch --apply file.patch --tool=C:\gnu\patch.exe
+    (Aplica el parche contenido en file.patch al workspace actual con un
+    ejecutable indicado explícitamente.)
+
+== CMD_DESCRIPTION_PROFILE ==
+Permite al usuario administrar perfiles de conexión configurados en el cliente.
+
+== CMD_USAGE_PROFILE ==
+Sintaxis:
+
+    cm profile | profile <command> [options]
+
+Comandos:
+
+    list   | ls
+    create | mk
+    delete | rm
+
+    Para obtener más información sobre cada comando:
+    cm profile <command> --usage
+    cm profile <command> --help
+
+== CMD_HELP_PROFILE ==
+Ejemplos:
+
+    cm profile
+    cm profile list
+    cm profile create
+    cm profile delete 1
+
+== CMD_DESCRIPTION_PROFILE_LIST ==
+Lista los perfiles de conexión configurados en el cliente.
+
+== CMD_USAGE_PROFILE_LIST ==
+Sintaxis:
+
+    cm profile [list | ls] [--format=<str_format>]
+
+Opciones:
+
+    --format        Muestra el mensaje de salida en el formato indicado.
+                    Consulte las notas para más información.
+
+== CMD_HELP_PROFILE_LIST ==
+Notas:
+
+    Parámetros de formato de salida (opción --format):
+        Este comando acepta una cadena de formato para mostrar la salida.
+        Los parámetros de salida de este comando son los siguientes:
+        {index}          | {0}       Índice del perfil dentro de la lista
+        {name}           | {1}       Nombre del perfil
+        {server}         | {2}       Servidor del perfil
+        {user}           | {3}       Usuario del perfil
+        {workingmode}    | {4}       Modo de trabajo del perfil
+        {securityconfig} | {5}       Configuración de seguridad del perfil
+        {tab}                        Inserta un tabulador
+        {newline}                    Inserta una nueva línea
+
+Ejemplos:
+
+    cm profile
+    (Lista todos los perfiles usando el formato por defecto.)
+
+    cm profile --format="{index,2}  {server,-20}"
+    (Muestra el índice del perfil utilizando 2 espacios y alineado a la derecha,
+    dos espacios, y el servidor de repositorios utilizando veinte espacios,
+    alineado a la izquierda.)
+
+    cm profile --format="{0,2}  {2,-20}"
+    (Muestra el mismo resultado que el ejemplo anterior.)
+
+== CMD_DESCRIPTION_PROFILE_CREATE ==
+Crea un nuevo perfil de conexión.
+
+== CMD_USAGE_PROFILE_CREATE ==
+Sintaxis:
+
+    cm profile [create | mk]
+     (Crea un nuevo perfil de conexión de manera interactiva.)
+
+    cm profile [create | mk] --server=<server_addr> --username=<username>
+                      --password=<password> --workingmode=<workingmode>
+     (Crea un nuevo perfil de conexión usando un modo de autenticación basado
+     en usuario y contraseña.)
+
+    cm profile [create | mk] --server=<server_addr> --username=<username>
+                      --token=<token> --workingmode=SSOWorkingMode
+     (Crea un nuevo perfil de conexión usando un modo de autenticación basado
+     en Single Sign On.)
+
+Opciones:
+
+    --server        Crea el perfil de conexión para el servidor especificado.
+    --username      El nombre de usuario que va a ser utilizado en el perfil de
+                    conexión.
+    --password      La contraseña, en texto plano, que será usada en el perfil
+                    de conexión. Esta opción solo es válida para los modos de
+                    autenticación basados en usuario y contraseña.
+    --token         El token, en texto plano, que será usado en el perfil de
+                    conexión. Esta opción solo es válida para los modos de
+                    autenticación basados en token (por ahora solo SSOWorkingMode).
+    --workingmode   El modo de autenticación del servidor.
+                    Modos de autenticación disponibles:
+                    LDAPWorkingMode (LDAP)
+                    UPWorkingMode (User and password)
+                    SSOWorkingMode (Single Sign On)
+
+== CMD_HELP_PROFILE_CREATE ==
+Notas:
+
+    Cuando se utiliza este comando en modo interactivo (sin opciones) el cliente
+    trata de conectarse con el servidor para obtener el modo de autenticación y
+    comprobar las credenciales. Esto garantiza que el perfil de conexión
+    resultante sea correcto.
+
+    Cuando se utiliza este comando con opciones, el cliente genera el perfil de
+    conexión sin conectar con el servidor. Esto es útil para crear perfiles de
+    conexión para su uso en automatización.
+
+Ejemplos:
+
+    cm profile create
+    (Crea un perfil de conexión de manera interactiva.)
+
+    cm profile create --server=plastic.domain.com:8087 --username=sergio
+      --password=thisissupersecret --workingmode=LDAPWorkingMode
+    (Crea un perfil de conexión contra 'plastic.domain.com:8087' con el usuario
+    'sergio' y la contraseña 'thisissupersecret' usando el modo de autenticación
+    LDAP.)
+
+    cm profile mk --server=plastic.domain.com:8087 --username=sergio
+      --token="TOKENAMoKJ9iAA(...)12fssoprov:unityid"
+    (Crea un perfil de conexión contra 'plastic.domain.com:8087' con el usuario
+    'sergio' y el token especificado usando el modo de autenticación Single Sign
+    On.)
+
+== CMD_DESCRIPTION_PROFILE_DELETE ==
+Borra un perfil de conexión de la configuración del cliente.
+
+== CMD_USAGE_PROFILE_DELETE ==
+Sintaxis:
+
+    cm profile delete | rm <index | name>
+    cm profile delete | rm --index=<index>
+    cm profile delete | rm --name=<name>
+
+    index       Índice del perfil en la lista de perfiles de conexión.
+    name        Nombre del perfil.
+
+Opciones:
+
+    --index     Utilizado para desambiguación en caso de que un perfil tenga un
+                número por nombre.
+    --name      Utilizado para desambiguación en caso de que un perfil tenga un
+                número por nombre.
+
+== CMD_HELP_PROFILE_DELETE ==
+Notas:
+
+    Borra un perfil de conexión de la configuración del cliente.
+    Funciona especificando tanto el índice del perfil como su nombre.
+    El comando 'cm profile list' no muestra el nombre del perfil por defecto,
+    use 'cm profile list --help' para saber cómo mostrar el nombre del perfil.
+
+Ejemplos:
+
+    cm profile delete 1
+    (Borra el perfil con índice 1)
+
+    cm profile delete 192.168.0.2:8087_UPWorkingMode
+    (Borra el perfil con nombre '192.168.0.2:8087_UPWorkingMode'.)
+
+    cm profile delete --name=12
+    (Borra el perfil con nombre '12'.)
+
+== CMD_DESCRIPTION_QUERY ==
+Ejecuta una consulta SQL contra la base de datos del servidor.
+
+== CMD_USAGE_QUERY ==
+Uso:
+
+    cm query comandosql [--outputfile=ruta]
+                        [--solveuser=nombre_columna1,nombre_columna2,...]
+                        [--solvepath=nombre_columna1,nombre_columna2,...]
+                        [--columnwidth=valor]
+
+    --outputfile: Escribe en un fichero el resultado de la consulta.
+    --solveuser: Indica al intérprete de consultas que la(s) columna(s)
+    especificada(s) contiene(n) usuarios. Se tratarán de resolver
+    identificadores de usuario a nombres de usuario.
+    --solvepath: Indica al intérprete de consultas que la(s) columna(s)
+     especificadas(s) contiene(n) identificadores de ítem. Se tratarán de
+     resolver los identificadores a rutas de disco.
+    --columnwidth: Especifica la anchura de cada columna del resultado de la
+    consulta.
+
+== CMD_HELP_QUERY ==
+Notas:
+
+    Este comando permite a los usuarios ejecutar consultas SQL directamente
+    contra la base de datos del servidor.
+    A continuación se detalla el esquema (tablas y campos de cada tabla)
+    disponibles para realizar consultas.
+
+    ITEMS
+        OBJECTID        (integer)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+    REVISIONS
+        OBJECTID        (integer)
+        SIZEBYTES       (integer)
+        ITEMID          (integer)
+        BRANCHID        (integer)
+        CHANGESET       (integer)
+        COMMENT         (string)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+    CHECKOUTS
+        REVISIONID      (integer)
+        WORKSPACESERVER (string)
+        CLIENTMACHINE   (string)
+        EXCLUSIVE       (char)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+    BRANCHES
+        OBJECTID        (integer)
+        NAME            (string)
+        PARENTBRANCHID  (integer)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+    LABELS
+        OBJECTID        (integer)
+        NAME            (string)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+    LABELEDREVISIONS
+        LABELID         (integer)
+        REVISIONID      (integer)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+    LINKS
+        OBJECTID        (integer)
+        NAME            (string)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+     LINKEDOBJECTS
+        LINKID              (integer)
+        SOURCEOBJECTID      (integer)
+        DESTINATIONOBJECTID (integer)
+        CREATIONDATE        (datetime)
+        OWNER               (string)
+
+    ATTRIBUTES
+        OBJECTID        (integer)
+        NAME            (string)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+    OBJECTSWITHATTRIBUTES
+        ATTRIBUTEID     (integer)
+        SOURCEOBJECTID  (integer)
+        ATTRIBUTEVALUE  (string)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+    CHANGESETS
+        CHANGESETNUMBER (integer)
+        CREATIONDATE    (datetime)
+        OWNER           (string)
+
+Además, a la hora de escribir consultas, existen dos functiones predefinidas
+para trabajar con usuarios y rutas de disco.
+Estas funciones son las siguientes:
+
+* SolveUser(nombre_usuario), resuelve el nombre de usuario dado al formato que
+maneja Unity VCS.
+* SolvePath(path), resuelve rutas de disco a identificadores de ítem itemid.
+
+Para mostrar el resultado de las consultas de forma legible al usuario, se
+puede indicar al intérprete de consultas que convierta identificadores de
+usuario a nombres de usuario, e identificadores de ítem a rutas de disco.
+Para ello se utilizan las opciones:
+
+--solveuser=nombre_columna
+--solvepath=nombre_columna
+
+Se pueden especificar varios nombres de columnas separados por comas.
+
+Ejemplos:
+
+    cm query "SELECT * FROM revision"
+
+    cm query "SELECT b.sname as br_name, o.dtimestamp as date from branch b, object o, seid s
+    where b.iobjid=o.iobjid and o.fidowner=s.iseidid and s.scode='SolveUser(juan)'"
+
+    cm query "SELECT * FROM REVISION WHERE itemid=SolvePath(c:\mi_workspace)"
+
+    cm query "SELECT r.iobjid, r.fiditem as ruta, s.scode as nombre_usuario FROM revision r, object o, seid s
+    WHERE r.iobjid=o.iobjid and o.fidowner=s.iseidid" --solveuser=nombre_usuario --solvepath=ruta
+
+== CMD_DESCRIPTION_ATTRIBUTE_DELETE ==
+Borra uno o más atributos.
+
+== CMD_USAGE_ATTRIBUTE_DELETE ==
+Sintaxis:
+
+    cm attribute | att delete | rm <att_spec>[ ...]
+
+    att_spec            Atributos a borrar. Use un espacio en blanco para separar
+                        atributos.
+                        (Use 'cm help objectspec' para más información sobre
+                        las especificaciones de atributos.)
+
+== CMD_HELP_ATTRIBUTE_DELETE ==
+Notas:
+
+   Este comando borra uno o más atributos.
+
+Ejemplos:
+
+    cm attribute delete att:status
+    (Borra el atributo 'status'.)
+
+    cm att rm status att:integrated@reptest@server2:8084
+    (Borra los atributos 'status' e 'integrated'.)
+
+== CMD_DESCRIPTION_ATTRIBUTE_UNSET ==
+Desasigna un atributo a un objeto.
+
+== CMD_USAGE_ATTRIBUTE_UNSET ==
+Sintaxis:
+
+    cm attribute | att unset <att_spec> <object_spec>
+
+    att_spec            Especificación del atributo. (Use 'cm help objectspec'
+                        para más información sobre las especificaciones de
+                        atributos.)
+    object_spec         Especificación del objeto sobre el que desasignar el
+                        atributo. Se pueden fijar atributos a ramas, changesets,
+                        shelvesets, etiquetas, items y revisiones.
+                        (Use 'cm help objectspec' para más información sobre
+                        especificaciones.)
+
+== CMD_HELP_ATTRIBUTE_UNSET ==
+Notas:
+
+    Este comando elimina la asignación de un atributo que ha sido aplicado
+    previamente a un objeto. Este comando no borra el atributo en sí.
+
+Ejemplo:
+
+    cm attribute unset att:status br:/main/SCM105
+    (Desasigna el atributo 'status' que estaba aplicado a la rama 'main/SCM105'.)
+
+    cm att unset att:integrated@reptest@localhost:8084 cs:25@reptest@localhost:8084
+    (Desasigna el atributo 'integrated' que estaba aplicado al changeset 25.
+    Tanto el atributo como el changeset se encuentran en el repositorio 'reptest'.)
+
+== CMD_DESCRIPTION_ATTRIBUTE_RENAME ==
+Renombra un atributo.
+
+== CMD_USAGE_ATTRIBUTE_RENAME ==
+Sintaxis:
+
+    cm attribute | att rename <att_spec> <new_name>
+
+    att_spec            Atributo a renombrar. (Use 'cm help objectspec' para
+                        más información sobre especificaciones de atributos.)
+    new_name            Nuevo nombre para el atributo.
+
+== CMD_HELP_ATTRIBUTE_RENAME ==
+Notas:
+
+   Este comando renombra un atributo.
+
+Ejemplos:
+
+   cm attribute rename att:status state
+   (Renombra el atributo 'status' a 'state')
+
+== CMD_DESCRIPTION_ATTRIBUTE_EDIT ==
+Edita el comentario de un atributo.
+
+== CMD_USAGE_ATTRIBUTE_EDIT ==
+Sintaxis:
+
+    cm attribute | att edit <att_spec> <new_comment>
+
+    att_spec        Atributo al cual editar su comentario.
+                    (Use 'cm help objectspec' para más información sobre
+                    especificaciones de atributos.)
+    new_comment     Nuevo comentario para el atributo. Este comentario puede ser
+                    una lista de posibles valores que el usuario puede seleccionar
+                    cuando asigne un atributo a un objeto. Consulte las Notas
+                    para más información.
+
+== CMD_HELP_ATTRIBUTE_EDIT ==
+Notas:
+
+    Este comando cambia el comentario de un atributo.
+
+    Para especificar la lista de valores por defecto para un atributo, indique
+    un texto como este en el comentario del atributo:
+    'default: valor_uno, "valor dos", valor3, "Valor final"'.
+
+Ejemplos:
+
+    cm attribute edit att:status "The status of a branch in the CI pipeline."
+    (Edita el comentario del atributo 'status'.)
+
+    cm attribute edit att:status "Status of a branch. default: open, resolved, reviewed"
+    (Edita el comentario del atributo 'status'. Y también especifica una lista
+    de valores. De este modo, cuando el usuario asigne el atribute 'status' a un
+    objeto, podrá seleccionar uno de los siguientes valores: 'open', 'resolved'
+    o 'reviewed'.)
+
+== CMD_DESCRIPTION_REPLICATE ==
+ATENCIÓN: Este comando se ha declarado obsoleto.
+
+Ha sido reemplazado por 'pull' (equivalente a 'replicate') y por 'push'
+(equivalente a 'replicate --push').
+
+Replica datos desde un repositorio remoto.
+
+== CMD_USAGE_REPLICATE ==
+Uso:
+
+    cm replicate br_spec dst_rep_spec [--nodata] [translateOptions] [authOptions]
+    cm replicate hydrate br_spec [src_rep_spec] [authOptions]
+    cm replicate hydrate cs_spec [src_rep_spec] [authOptions]
+    cm replicate br_spec --package=packagename [--changeset=número]
+    cm replicate dst_rep_spec --import=packagename
+
+    br_spec: la rama para ser replicada/hidratada. Es una especificación
+    completa de rama con el siguiente formato:
+      br:/NOMBRE_RAMA[@rep:NOMBRE_REP[@repserver:NOMBRE_SERVIDOR:puerto]]
+
+    cs_spec: changeset para ser hidratado. Es una espec. de changeset:
+        cs:NUMERO_CHANGESET[@rep:NOMBRE_REP[@repserver:NOMBRE_SERVIDOR:puerto]]
+
+    src_rep_sec: repositorio origen de los datos. Es una especificación
+    completa de repositorio:
+      rep:NOMBRE_REPOSITORIO@repserver:NOMBRE_SERVIDOR:puerto
+
+    dst_rep_sec: repositorio destino de la replica. Es una especificación
+    completa de repositorio:
+      rep:NOMBRE_REPOSITORIO@repserver:NOMBRE_SERVIDOR:puerto
+
+Opciones:
+
+    --package para crear un paquete de replicación.
+    --import para importar un paquete concreto.
+    --nodata para replicar los cambios de una rama sin replicar sus datos. Esta
+        opción no se puede usar para la réplica con paquetes ni con la opción
+        --push.
+
+Opciones de traducción:
+
+    --trmode=[copy | name | table] para especificar cómo tratar los
+        nombres de usuario cuando se importen los datos en el
+        repositorio de destino:
+        * copy  -> es el utilizado por defecto. Copia los SEIDs en el
+          repositorio de destino.
+        * name  -> realiza una traducción por nombre entre el modo
+          de autentificación de origen y el de destino.
+        * table -> se usará una tabla de traducción en la que se
+          especifican los nombres de origen y cómo han de quedar
+          en el destino.
+
+    --trtable=[translationTable]
+        una tabla de traducción es un fichero que contiene entradas
+        en la forma nombre antiguo;nombre nuevo.
+
+Opciones de autentificación:
+
+    Hay dos formas de especificar los datos de autentificación:
+
+    1) Especificando un fichero de autentificación.
+
+       --authfile=fichero, un fichero que contiene dos líneas: el modo de
+           autentificación en la primera línea y los datos de autentificación
+           (ver --authdata) o una cadena vacía en la segunda.
+
+    2) Especificando la autentificación mediante parámetros.
+
+       Para ello hay que especificar el modo de autentificación mediante el
+       modificador:
+
+       --authmode=[NameWorkingMode | NameIDWorkingMode |
+            LDAPWorkingMode | ADWorkingMode | UPWorkingMode]
+
+        Si está trabajando en UPWorkingMode o LDAPWorkingMode, puede
+        especificar los datos de autentificación de dos formas:
+
+        2.1) Para UPWorkingMode o LDAPWorkingMode:
+
+            --authdata=datos_de_autentificación
+
+            Ejemplos:
+              --authdata=ActiveDirectory:192.168.1.3:389:john.doe@factory.com:fPBea2rPsQaagEW3pKNveA==:dc=factory,dc=com (LDAPWorkingMode)
+              --authdata=john:fPBea2rPsQaagEW3pKNveA== (UPWorkingMode)
+
+        2.2) Solamente para UPWorkingMode:
+
+             --user=usuario
+             --password=contraseña
+
+== CMD_HELP_REPLICATE ==
+Notas:
+
+    El comando 'replicate' replica datos desde una rama hacia un
+    repositorio de destino. Todos los datos de la rama de origen, incluyendo
+    revisiones, ítems, changesets, etiquetas, revisiones de código, links
+    y seguridad serán replicados.
+
+    Su cliente Unity VCS debe estar configurado para trabajar con el
+    repositorio de destino.
+
+    La replicación también gestiona la 'reconciliación' de ramas que han
+    sido modificadas tanto en origen como en destino, mediante la creación
+    de 'ramas de entrega' (fetch branches) que podrán ser integradas
+    posteriormente para resolver los conflictos.
+
+    La replicación puede funcionar en tres modos diferentes:
+
+    1- Comunicación directa entre servidores: lo que significa que el servidor
+    de destino se comunicará con el de origen para sincronizar la rama
+    especificada.
+
+    2- Generación de paquete de exportación: el cliente se conectará
+    únicamente con el destino para generar un paquete de replicación con los
+    datos y los metadatos de la rama especificada. Se usará el modificador
+    --package. El usuario podrá especificar, opcionalmente, un changeset
+    inicial desde el cual generar la replicación.
+
+    3- Importar un paquete generado previamente, usando la opción --import.
+
+    En los modos 1 y 2 será necesaria la autentificación contra el servidor
+    de origen. El comando 'replicate' acepta parámetros para especificar los
+    diferentes modos de autentificación.
+
+Ejemplos:
+
+    cm replicate br:/main@rep:default@repserver:LONDRES:8084 rep:myrep@repserver:MADRID:9090
+    cm replicate br:/main@rep:default@repserver:LONDRES:8084 rep:myrep@repserver:MADRID:9090 --trmode=name
+    cm replicate br:/main@rep:default@repserver:LONDRES:8084 rep:myrep@repserver:MADRID:9090 --trmode=table --trtable=tabla.txt
+
+    cm replicate br:/main@rep:default@repserver:LONDRES:8084 rep:myrep@repserver:MADRID:9090 --authmode=NameWorkingMode --user=john.doe
+      Significa que se autentificará contra el servidor 'MADRID' usando NameWorkingMode como usuario 'john.doe'
+
+    cm replicate br:/main/releaseBL060@rep:blackbird@repserver:barcelona:9090 --package=replicationpackage.data
+      Creará un paquete de replicación
+
+    cm replicate rep:mine@repserver:casa:9094 --import=replicationpackage.data
+      Importará el paquete creado con anterioridad
+
+    cm replicate br:/main/releaseBL060@rep:blackbird@repserver:barcelona:9090 --package=replicationpackage.data --changeset=1230
+      Generará un paquete de replicación de la rama br:/main/releaseBL060 desde el changeset 1230
+
+    cm replicate /main@project1@LONDRES:8084 projectx@localhost:8084 --nodata
+      Replicará la rama /main del servidor LONDRES a mi servidor sin replica los datos.
+
+    cm replicate hydrate /main@projectx@localhost:8084 project1@LONDRES:8084
+      Hidratará los datos de la rama /main de mi servidor, usando los datos del servidor LONDRES.
+
+Nota adicional:
+    La tabla de traducción tiene entradas (una por línea) con el siguiente
+    formato:
+    nombre antiguo;nombre nuevo
+
+== CMD_DESCRIPTION_PULL ==
+Replica datos desde un repositorio remoto.
+
+== CMD_USAGE_PULL ==
+Uso:
+
+    cm pull src_br_spec dst_rep_spec
+            [--preview] [--nodata] [translateOptions]
+            [--user=usr_name [--password=pwd] | AuthOptions]
+     (Replicación directa entre servidores. Hace pull de una rama desde un
+      repositorio.)
+
+    cm pull dst_rep_spec --package=pack_file [AuthOptions]
+     (Replicación basada en paquetes. Importa el paquete en el servidor de
+      destino.)
+
+    cm pull hydrate dst_br_spec [src_rep_spec]
+            [--user=usr_name [--password=pwd] | AuthOptions]
+     (Introduce los datos restantes para todos los changesets de una rama
+      replicada previamente con la opción --nodata. Si no se especifica un
+      repositorio del que obtener los datos, Unity VCS intentará usar el
+      origen de replicación original de la rama.)
+
+    cm pull hydrate dst_cs_spec [src_rep_spec]
+            [--user=usr_name [--password=pwd] | AuthOptions]
+     (Introduce los datos restantes para un changeset replicado previamente
+      con la opción --nodata. Si no se especifica un repositorio del que obtener
+      los datos, Unity VCS intentará usar el origen de replicación original de
+      la rama.)
+
+    src_br_spec        La rama a ser replicada desde un repositorio remoto.
+    dst_br_spec        La rama a ser hidratada.
+                       Especificación de ramas:
+                       [br:][/]nombre_rama[@[rep:]nombre_rep[@[repserver:]nombre_servidor:puerto]]
+    dst_cs_spec        El changeset a ser hidratado.
+                       Especificación de changesets:
+                       cs:numero_cset[@[rep:]nombre_rep[@[repserver:]nombre_servidor:puerto]]
+    dst_rep_spec       El repositorio de destino.
+                       Especificación de repositorio:
+                       [rep:]nombre_rep[@[repserver:]nombre_servidor:puerto]
+    --package          El fichero de donde se importa un paquete de replicación 
+                       creado anteriormente.
+                       Es útil para mover datos entre servidores sin una
+                       conexión de red directa.
+                       Consule 'cm push' para crear paquetes de replicación.
+
+Opciones:
+
+    --preview           Proporciona información sobre qué cambios serán traídos
+                        durante el pull, pero no se ejecuta ninguna acción más.
+                        Esta opción es útil para comprobar qué datos serán
+                        replicados antes de ejecutar el pull.
+    --user, --password  Credenciales para utilizar en caso de que el modo de
+                        autenticación de los servidores origen y destino 
+                        difieran, y no exista un profile para autenticarse 
+                        contra el remoto.
+    --nodata            Replica los metadatos de una rama sin replicar los
+                        datos. Esta opción no se puede utilizar al importar un
+                        paquete de replicación.
+
+Opciones de traducción (translateOptions):
+
+    --trmode={copy|name|table}
+        El servidor de origen y de destino pueden utilizar modos distintos de
+        autenticación. Este argumento especifica cómo se han de traducir los
+        nombres de usuario del origen al destino.
+        - copy    El modo por defecto, indica que los nombres de usuario serán
+                  simplemente copiados.
+        - name    Los nombres de usuario serán emparejados entre origen y
+                  destino por coincidencia.
+        - table   Se utilizará una tabla de traducción (más información a
+                  continuación).
+
+    --trtable={translation_table_file}
+        Si el modo de traducción es 'table', entonces una tabla de traducción
+        es un fichero que contiene líneas de la forma nombreantiguo;nombrenuevo.
+        Cuando la rama se escribe en el repositorio de destino, los objetos
+        creados por un usuario identificado por "nombreantiguo" en el
+        repositorio de origen serán asignados al usuario identificado por
+        "nombrenuevo" en el repositorio de destino.
+
+Opciones de autentificación (AuthOptions):
+
+    Hay dos formas de especificar los datos de autentificación:
+
+    1) Especificando la autentificación mediante parámetros:
+
+        --authmode={NameWorkingMode|LDAPWorkingMode|ADWorkingMode|UPWorkingMode}
+        (LDAPWorkingMode) --authdata=::0:dave:fPBea2rPsQaagEW3pKNveA
+        (UPWorkingMode)   --authdata=dave:fPBea2rPsQaagEW3pKNveA==
+
+        El parámetro '--authdata' es el contenido del campo <SecurityConfig>
+        en los ficheros client.conf o profiles.conf. El fichero profiles.conf
+        puede ser generado desde la GUI de Unity VCS (Windows).
+
+        Si se utiliza UPWorkingMode, se puede especificar simplemente:
+
+        --authmode=UPWorkingMode --user=user --password=pwd
+
+        2.1) Para UPWorkingMode o LDAPWorkingMode:
+
+            --authdata=datos_de_autentificación
+
+            Ejemplos:
+              --authdata=ActiveDirectory:192.168.1.3:389:john.doe@factory.com:fPBea2rPsQaagEW3pKNveA==:dc=factory,dc=com (LDAPWorkingMode)
+              --authdata=john:fPBea2rPsQaagEW3pKNveA== (UPWorkingMode)
+
+        2.2) Solamente para UPWorkingMode:
+
+             --user=usuario
+             --password=contraseña
+
+    1) Especificando un fichero de autentificación. Se pueden tener varios
+       ficheros de autenticación, uno por servidor al que se conecte,
+       conteniendo las credenciales específicas para dicho servidor.
+
+       --authfile=fichero
+            Contiene 2 líneas:
+            Línea 1) modo de autenticación, igual que para --authmode.
+            Línea 2) datos de autenticación, igual que para --authdata.
+
+== CMD_HELP_PULL ==
+Notas:
+
+    El comando pull replica ramas (junto a sus changesets) entre un repositorio
+    origen y otro destino. Los repositorios pueden encontrarse en diferentes
+    servidores.
+
+    Hay dos operaciones de replicación: push y pull.
+
+    Una operación de 'pull' significa que la operación de replicación hará que
+    el servidor destino obtenga datos desde el origen. El cliente se conectará
+    con el servidor destino, y, desde ese host, establecerá una conexión con el
+    repositorio origen para recuperar los datos pedidos. Durante el pull, será
+    el servidor destino el que se conecte al origen.
+
+    Aunque en un escenario distribuido típico el desarrollador haga pùsh de los
+    cambios en su servidor local al servidor central, también puede ser
+    necesario hacer pull de los últimos cambios en el servidor central al

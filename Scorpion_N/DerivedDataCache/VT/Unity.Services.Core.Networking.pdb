@@ -1,0 +1,248 @@
+for the current viewport.
+        /// </summary>
+        /// <param name="cmd">Command Buffer used for rendering.</param>
+        /// <param name="source">Source RTHandle.</param>
+        /// <param name="destination">Destination RTHandle.</param>
+        /// <param name="mipLevel">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        public static void BlitCameraTexture(CommandBuffer cmd, RTHandle source, RTHandle destination, float mipLevel = 0.0f, bool bilinear = false)
+        {
+            Vector2 viewportScale = source.useScaling ? new Vector2(source.rtHandleProperties.rtHandleScale.x, source.rtHandleProperties.rtHandleScale.y) : Vector2.one;
+            // Will set the correct camera viewport as well.
+            CoreUtils.SetRenderTarget(cmd, destination);
+            BlitTexture(cmd, source, viewportScale, mipLevel, bilinear);
+        }
+
+        /// <summary>
+        /// Blit a RThandle Texture2D RTHandle to another RTHandle.
+        /// This will properly account for partial usage (in term of resolution) of the texture for the current viewport.
+        /// </summary>
+        /// <param name="cmd">Command Buffer used for rendering.</param>
+        /// <param name="source">Source RTHandle.</param>
+        /// <param name="destination">Destination RTHandle.</param>
+        /// <param name="mipLevel">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        public static void BlitCameraTexture2D(CommandBuffer cmd, RTHandle source, RTHandle destination, float mipLevel = 0.0f, bool bilinear = false)
+        {
+            Vector2 viewportScale = source.useScaling ? new Vector2(source.rtHandleProperties.rtHandleScale.x, source.rtHandleProperties.rtHandleScale.y) : Vector2.one;
+            // Will set the correct camera viewport as well.
+            CoreUtils.SetRenderTarget(cmd, destination);
+            BlitTexture2D(cmd, source, viewportScale, mipLevel, bilinear);
+        }
+
+        /// <summary>
+        /// Blit a RTHandle to another RTHandle.
+        /// This will properly account for partial usage (in term of resolution) of the texture for the current viewport.
+        /// This overloads allows the user to override the default blit shader
+        /// </summary>
+        /// <param name="cmd">Command Buffer used for rendering.</param>
+        /// <param name="source">Source RTHandle.</param>
+        /// <param name="destination">Destination RTHandle.</param>
+        /// <param name="material">The material to use when blitting</param>
+        /// <param name="pass">pass to use of the provided material</param>
+        public static void BlitCameraTexture(CommandBuffer cmd, RTHandle source, RTHandle destination, Material material, int pass)
+        {
+            Vector2 viewportScale = source.useScaling ? new Vector2(source.rtHandleProperties.rtHandleScale.x, source.rtHandleProperties.rtHandleScale.y) : Vector2.one;
+            // Will set the correct camera viewport as well.
+            CoreUtils.SetRenderTarget(cmd, destination);
+            BlitTexture(cmd, source, viewportScale, material, pass);
+        }
+
+        /// <summary>
+        /// Blit a RTHandle to another RTHandle.
+        /// This will properly account for partial usage (in term of resolution) of the texture for the current viewport.
+        /// This overloads allows the user to override the default blit shader
+        /// </summary>
+        /// <param name="cmd">Command Buffer used for rendering.</param>
+        /// <param name="source">Source RTHandle.</param>
+        /// <param name="destination">Destination RTHandle.</param>
+        /// <param name="loadAction">Load action.</param>
+        /// <param name="storeAction">Store action.</param>
+        /// <param name="material">The material to use when blitting</param>
+        /// <param name="pass">pass to use of the provided material</param>
+        public static void BlitCameraTexture(CommandBuffer cmd, RTHandle source, RTHandle destination, RenderBufferLoadAction loadAction, RenderBufferStoreAction storeAction, Material material, int pass)
+        {
+            Vector2 viewportScale = source.useScaling ? new Vector2(source.rtHandleProperties.rtHandleScale.x, source.rtHandleProperties.rtHandleScale.y) : Vector2.one;
+            // Will set the correct camera viewport as well.
+            CoreUtils.SetRenderTarget(cmd, destination, loadAction, storeAction, ClearFlag.None, Color.clear);
+            BlitTexture(cmd, source, viewportScale, material, pass);
+        }
+
+        /// <summary>
+        /// Blit a RTHandle to another RTHandle.
+        /// This will properly account for partial usage (in term of resolution) of the texture for the current viewport.
+        /// This overload allows user to override the scale and bias used when sampling the input RTHandle.
+        /// </summary>
+        /// <param name="cmd">Command Buffer used for rendering.</param>
+        /// <param name="source">Source RTHandle.</param>
+        /// <param name="destination">Destination RTHandle.</param>
+        /// <param name="scaleBias">Scale and bias used to sample the input RTHandle.</param>
+        /// <param name="mipLevel">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        public static void BlitCameraTexture(CommandBuffer cmd, RTHandle source, RTHandle destination, Vector4 scaleBias, float mipLevel = 0.0f, bool bilinear = false)
+        {
+            // Will set the correct camera viewport as well.
+            CoreUtils.SetRenderTarget(cmd, destination);
+            BlitTexture(cmd, source, scaleBias, mipLevel, bilinear);
+        }
+
+        /// <summary>
+        /// Blit a RTHandle to another RTHandle.
+        /// This will properly account for partial usage (in term of resolution) of the texture for the current viewport.
+        /// This overload allows user to override the viewport of the destination RTHandle.
+        /// </summary>
+        /// <param name="cmd">Command Buffer used for rendering.</param>
+        /// <param name="source">Source RTHandle.</param>
+        /// <param name="destination">Destination RTHandle.</param>
+        /// <param name="destViewport">Viewport of the destination RTHandle.</param>
+        /// <param name="mipLevel">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        public static void BlitCameraTexture(CommandBuffer cmd, RTHandle source, RTHandle destination, Rect destViewport, float mipLevel = 0.0f, bool bilinear = false)
+        {
+            Vector2 viewportScale = source.useScaling ? new Vector2(source.rtHandleProperties.rtHandleScale.x, source.rtHandleProperties.rtHandleScale.y) : Vector2.one;
+            CoreUtils.SetRenderTarget(cmd, destination);
+            cmd.SetViewport(destViewport);
+            BlitTexture(cmd, source, viewportScale, mipLevel, bilinear);
+        }
+
+        /// <summary>
+        /// Blit a texture using a quad in the current render target.
+        /// </summary>
+        /// <param name="cmd">Command buffer used for rendering.</param>
+        /// <param name="source">Source texture.</param>
+        /// <param name="scaleBiasTex">Scale and bias for the input texture.</param>
+        /// <param name="scaleBiasRT">Scale and bias for the output texture.</param>
+        /// <param name="mipLevelTex">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        public static void BlitQuad(CommandBuffer cmd, Texture source, Vector4 scaleBiasTex, Vector4 scaleBiasRT, int mipLevelTex, bool bilinear)
+        {
+            s_PropertyBlock.SetTexture(BlitShaderIDs._BlitTexture, source);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBias, scaleBiasTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBiasRt, scaleBiasRT);
+            s_PropertyBlock.SetFloat(BlitShaderIDs._BlitMipLevel, mipLevelTex);
+
+            DrawQuad(cmd, GetBlitMaterial(source.dimension), bilinear ? 3 : 2);
+        }
+
+        /// <summary>
+        /// Blit a texture using a quad in the current render target.
+        /// </summary>
+        /// <param name="cmd">Command buffer used for rendering.</param>
+        /// <param name="source">Source texture.</param>
+        /// <param name="textureSize">Source texture size.</param>
+        /// <param name="scaleBiasTex">Scale and bias for sampling the input texture.</param>
+        /// <param name="scaleBiasRT">Scale and bias for the output texture.</param>
+        /// <param name="mipLevelTex">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        /// <param name="paddingInPixels">Padding in pixels.</param>
+        public static void BlitQuadWithPadding(CommandBuffer cmd, Texture source, Vector2 textureSize, Vector4 scaleBiasTex, Vector4 scaleBiasRT, int mipLevelTex, bool bilinear, int paddingInPixels)
+        {
+            s_PropertyBlock.SetTexture(BlitShaderIDs._BlitTexture, source);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBias, scaleBiasTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBiasRt, scaleBiasRT);
+            s_PropertyBlock.SetFloat(BlitShaderIDs._BlitMipLevel, mipLevelTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitTextureSize, textureSize);
+            s_PropertyBlock.SetInt(BlitShaderIDs._BlitPaddingSize, paddingInPixels);
+            if (source.wrapMode == TextureWrapMode.Repeat)
+                DrawQuad(cmd, GetBlitMaterial(source.dimension), bilinear ? 7 : 6);
+            else
+                DrawQuad(cmd, GetBlitMaterial(source.dimension), bilinear ? 5 : 4);
+        }
+
+        /// <summary>
+        /// Blit a texture using a quad in the current render target, by performing an alpha blend with the existing content on the render target.
+        /// </summary>
+        /// <param name="cmd">Command buffer used for rendering.</param>
+        /// <param name="source">Source texture.</param>
+        /// <param name="textureSize">Source texture size.</param>
+        /// <param name="scaleBiasTex">Scale and bias for sampling the input texture.</param>
+        /// <param name="scaleBiasRT">Scale and bias for the output texture.</param>
+        /// <param name="mipLevelTex">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        /// <param name="paddingInPixels">Padding in pixels.</param>
+        public static void BlitQuadWithPaddingMultiply(CommandBuffer cmd, Texture source, Vector2 textureSize, Vector4 scaleBiasTex, Vector4 scaleBiasRT, int mipLevelTex, bool bilinear, int paddingInPixels)
+        {
+            s_PropertyBlock.SetTexture(BlitShaderIDs._BlitTexture, source);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBias, scaleBiasTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBiasRt, scaleBiasRT);
+            s_PropertyBlock.SetFloat(BlitShaderIDs._BlitMipLevel, mipLevelTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitTextureSize, textureSize);
+            s_PropertyBlock.SetInt(BlitShaderIDs._BlitPaddingSize, paddingInPixels);
+            if (source.wrapMode == TextureWrapMode.Repeat)
+                DrawQuad(cmd, GetBlitMaterial(source.dimension), bilinear ? 12 : 11);
+            else
+                DrawQuad(cmd, GetBlitMaterial(source.dimension), bilinear ? 10 : 9);
+        }
+
+        /// <summary>
+        /// Blit a texture (which is a Octahedral projection) using a quad in the current render target.
+        /// </summary>
+        /// <param name="cmd">Command buffer used for rendering.</param>
+        /// <param name="source">Source texture.</param>
+        /// <param name="textureSize">Source texture size.</param>
+        /// <param name="scaleBiasTex">Scale and bias for sampling the input texture.</param>
+        /// <param name="scaleBiasRT">Scale and bias for the output texture.</param>
+        /// <param name="mipLevelTex">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        /// <param name="paddingInPixels">Padding in pixels.</param>
+        public static void BlitOctahedralWithPadding(CommandBuffer cmd, Texture source, Vector2 textureSize, Vector4 scaleBiasTex, Vector4 scaleBiasRT, int mipLevelTex, bool bilinear, int paddingInPixels)
+        {
+            s_PropertyBlock.SetTexture(BlitShaderIDs._BlitTexture, source);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBias, scaleBiasTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBiasRt, scaleBiasRT);
+            s_PropertyBlock.SetFloat(BlitShaderIDs._BlitMipLevel, mipLevelTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitTextureSize, textureSize);
+            s_PropertyBlock.SetInt(BlitShaderIDs._BlitPaddingSize, paddingInPixels);
+            DrawQuad(cmd, GetBlitMaterial(source.dimension), 8);
+        }
+
+        /// <summary>
+        /// Blit a texture (which is a Octahedral projection) using a quad in the current render target, by performing an alpha blend with the existing content on the render target.
+        /// </summary>
+        /// <param name="cmd">Command buffer used for rendering.</param>
+        /// <param name="source">Source texture.</param>
+        /// <param name="textureSize">Source texture size.</param>
+        /// <param name="scaleBiasTex">Scale and bias for sampling the input texture.</param>
+        /// <param name="scaleBiasRT">Scale and bias for the output texture.</param>
+        /// <param name="mipLevelTex">Mip level to blit.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        /// <param name="paddingInPixels">Padding in pixels.</param>
+        public static void BlitOctahedralWithPaddingMultiply(CommandBuffer cmd, Texture source, Vector2 textureSize, Vector4 scaleBiasTex, Vector4 scaleBiasRT, int mipLevelTex, bool bilinear, int paddingInPixels)
+        {
+            s_PropertyBlock.SetTexture(BlitShaderIDs._BlitTexture, source);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBias, scaleBiasTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBiasRt, scaleBiasRT);
+            s_PropertyBlock.SetFloat(BlitShaderIDs._BlitMipLevel, mipLevelTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitTextureSize, textureSize);
+            s_PropertyBlock.SetInt(BlitShaderIDs._BlitPaddingSize, paddingInPixels);
+            DrawQuad(cmd, GetBlitMaterial(source.dimension), 13);
+        }
+
+        /// <summary>
+        /// Blit a cube texture into 2d texture as octahedral quad. (projection)
+        /// </summary>
+        /// <param name="cmd">Command buffer used for rendering.</param>
+        /// <param name="source">Source cube texture.</param>
+        /// <param name="mipLevelTex">Mip level to sample.</param>
+        /// /// <param name="scaleBiasRT">Scale and bias for the output texture.</param>
+        public static void BlitCubeToOctahedral2DQuad(CommandBuffer cmd, Texture source, Vector4 scaleBiasRT, int mipLevelTex)
+        {
+            s_PropertyBlock.SetTexture(BlitShaderIDs._BlitCubeTexture, source);
+            s_PropertyBlock.SetFloat(BlitShaderIDs._BlitMipLevel, mipLevelTex);
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBias, new Vector4(1, 1, 0, 0));
+            s_PropertyBlock.SetVector(BlitShaderIDs._BlitScaleBiasRt, scaleBiasRT);
+            DrawQuad(cmd, GetBlitMaterial(source.dimension), 14);
+        }
+
+        /// <summary>
+        /// Blit a cube texture into 2d texture as octahedral quad with padding. (projection)
+        /// </summary>
+        /// <param name="cmd">Command buffer used for rendering.</param>
+        /// <param name="source">Source cube texture.</param>
+        /// <param name="textureSize">Source texture size.</param>
+        /// <param name="mipLevelTex">Mip level to sample.</param>
+        /// <param name="scaleBiasRT">Scale and bias for the output texture.</param>
+        /// <param name="bilinear">Enable bilinear filtering.</param>
+        /// <param name="paddingInPixels">Padding in pixels.</param>
+        /// <param name="decodeInstructions">Decode instruction.</param>
+        public static void BlitCubeToOctahedral2DQuadWithPadding(CommandBuffer cmd, Texture source, Vector2 textureSize, Vector4 scaleBiasRT, int mip

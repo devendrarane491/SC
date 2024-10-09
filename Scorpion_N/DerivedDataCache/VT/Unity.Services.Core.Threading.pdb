@@ -1,0 +1,361 @@
+ xlink indicado.
+    expansion_rules     Especifica una o más reglas de expansión. Cada regla de
+                        expansión es un par (rama)-(rama a enlazar)
+                        br:/main/fix-br:/main/develop/fix
+
+Opciones:
+
+  -w                    Crea un xlink de escritura. Esto significa que los 
+                        contenidos bajo el xlink se podrán editar mediante el 
+                        uso de autoexpansión de ramas.
+  -rs                   Relative server. Permite crear un xlink a un repositorio
+                        que es una réplica de otro que existe en un servidor 
+                        central. De este modo se reconcilian automáticamente los
+                        repositorios replicados con el original.
+
+Ejemplos:
+
+  cm xlink codigo\segundorepositorio / 1@segundo@localhost:8084
+  cm xlink codigo\segundorepositorio / lb:LB001@segundo@localhost:8084
+  cm xlink -s codigo\segundorepositorio
+  cm xlink -ar codigo\segundorepositorio br:/main-br:/main/develop br:/main/fix-br:/main/develop/fix
+  cm xlink -dr codigo\segundorepositorio br:/main/fix-br:/main/develop/fix
+
+== CMD_HELP_XLINK ==
+Notas:
+
+    Este comando crea un xlink al changeset especificado. Por defecto se
+    creará como un xlink de sólo lectura. Esto significa que los contenidos
+    correspondientes a otro repositorio cargados por debajo del xlink no
+    podrán ser modificados.
+
+    Para la edición del changeset de un xlink se puede utilizar una sintaxis
+    reducida en la que no hay que especificar el resto de parámetros del
+    xlink. Solamente es necesario en nuevo changeset al que apuntará.
+
+    Auto-expansión de ramas:
+
+    Cuando se realiza un cambio en uno de los repositorios enlazados en modo
+    de lectura y escritura (opción -e) es necesario crear una nueva rama en
+    dicho repositorio basándose en la rama en la que se está trabajando en el
+    repositorio principal. Para determinar el nombre de dicha rama, se aplican
+    las siguientes reglas:
+      1) Se comprueba si el nombre completo de la rama existe en el
+    repositorio enlazado:
+      - Si existe, se utiliza dicha rama.
+      - Si no existe, Unity VCS construye el nombre de la rama de esta forma:
+          - Nombre de la rama que contiene el changeset enlazado + nombre 
+            de la rama del repositorio principal.
+          - Si existe una rama con dicho nombre, se utiliza como rama de 
+            trabajo.
+          - Si no, se crea una rama nueva con el nombre así construido y 
+            se establece como base de la rama el changeset enlazado.
+      2) Después, se crea una nueva versión del xlink dentro de la nueva rama
+         apuntando al nuevo changeset. 
+
+    De este modo, la estructura completa del xlink se mantiene actualizada con 
+    los últimos cambios en las versiones correctas.
+
+Ejemplos:
+
+    cm xlink code\firstrepo / 1@first@localhost:8084
+    (Crea un xlink en la carpeta 'firstrepo' en el espacio de trabajo actual
+     donde el changeset '1' en el repositorio 'first' se enlazará).
+
+    cm xlink opengl\include /includes/opengl 1627@includes@localhost:8087
+    (Crea un xlink parcial de solo lectura en la ruta 'opengl\include' en el
+     espacio de trabajo actual donde la ruta '/includes/opengl' en el changeset 
+     '1627' del repositorio 'includes' se enlazará como raíz. Esto significa
+     que cualquier ítem dentro de '/includes/opengl' se enlazará en 
+     'opengl\include' mientras que el resto del repositorio se ignorará).
+
+    cm xlink -w -rs code\secondrepo / lb:LB001@second@localhost:8084
+    (Crea un xlink de escritura y relativo en la ruta 'secondrepo' en el
+     espacio de trabajo actual donde la etiqueta'LB001' en el repositorio
+     'second' se enlazará).
+
+    cm xlink code\thirdrepo / 3@third@localhost:8087 br:/main-br:/main/scm003
+    (Crea un xlink en la ruta 'thirdrepo' dentro del espacio de trabajo actual
+     donde el changeset '3' en el repositorio 'third' se enlazará).
+
+    cm xlink -e code\secondrepo br:/main/task1234@second@localhost:8084
+    (Edita el xlink 'code\secondrepo' para cambiar el repositorio destino 
+     enlazando la rama 'main/task1234' en el repositorio 'second').
+
+    cm xlink --show code\thirdrepo
+    (Muestra información del xlink 'code\thirdrepo' incluyendo las reglas de 
+     expansión si éstas existen).
+
+    cm xlink -ar code\secondrepo br:/main-br:/main/develop br:/main/fix-br:/main/develop/fix
+    (Añade dos reglas de expansión al xlink 'code\secondrepo').
+
+    cm xlink -dr code\secondrepo br:/main/fix-br:/main/develop/fix
+    (Borra la regla de expansión del xlink 'code\secondrepo').
+
+    cm xlink code\secondrepo / 1@second@localhost:8084
+    cm xlink code\secondrepo / lb:LB001@second@localhost:8084
+
+== CMD_USAGE_AUTOCOMPLETE ==
+Sintaxis:
+
+    cm autocomplete install
+     Instala el autocompletado de comandos para 'cm' en la shell.
+
+    cm autocomplete uninstall
+     Desinstala el autocompletado de comandos para 'cm' de la shell.
+
+    cm autocomplete --line <shell_line> --position <cursor_position>
+     Devuelve sugerencias de autocompletado para 'shell_line', que deben ser
+     insertadas en 'cursor_position'. Este comando no está pensado para ser
+     ejecutado por el usuario final, pero está documentado en caso de que se
+     quiera extender el soporte de autocompletado a otras shells.
+
+    shell_line      La linea que el usuario ha escrito en la shell cuando se
+                    pidió el autocompletado.
+                    En Bash, encuentra en la variable de entorno COMP_LINE.
+                    En PowerShell, se encuentra en la variable $wordToComplete.
+    cursor_position La posición del cursor cuando se pidió el autocompletado.
+                    En Bash, se encuentra en la variable de entorno COMP_POINT.
+                    En PowerShell, se encuentra en la variable $cursorPoint.
+
+== CMD_DESCRIPTION_API ==
+Arranca un servidor HTTP local que escucha peticiones de REST API.
+
+== CMD_USAGE_API ==
+Sintaxis:
+
+    cm api [(-p|--port)=<portnumber>] [(-r|--remote)]
+
+Opciones:
+
+    -p | --port         Pide al servidor escuchar en el puerto <portnumber>
+                        en lugar del 9090.
+
+    -r | --remote       Permite conexiones entrantes remotas, es decir,
+                        aquellas que provienen de otras máquinas en vez de
+                        la local.
+
+== CMD_HELP_API ==
+Notas:
+
+    El comando 'cm api' permite a los programadores realizar operaciones Unity VCS
+    de cliente en sus máquinas.
+    Lea la Guía de Unity VCS API para más información:
+    https://www.plasticscm.com/documentation/restapi/plastic-scm-version-control-rest-api-guide
+
+    Por defecto, la API escucha solamente conexiones locales en el puerto 9090.
+
+    Para detener el servidor, presione la tecla Enter.
+
+Ejemplos:
+
+    cm api
+    (Arranca la API en el puerto 9090; únicamente conexiones locales.)
+
+    cm api -r
+    (Arranca la API en el puerto 9090; permite cualquier conexión entrante.)
+
+    cm api --port=15000 -r
+    (Arranca la API en el puerto 15000; permite cualquier conexión entrante.)
+
+== CMD_DESCRIPTION_CONFIGURECLIENT ==
+Configura el cliente de Unity VCS y especificar un servidor por defecto para el usuario actual.
+
+== CMD_USAGE_CONFIGURECLIENT ==
+Sintaxis:
+    cm configure [--language=<idioma> --workingmode=<modo> [AuthParameters] 
+                 --server=<servidor> [--port=<puerto>]] [--clientconf=<ruta_clientconf>]
+
+    --language          Idiomas disponibles:
+                        en (English)
+                        es (Spanish)
+
+    --workingmode       Modos de seguridad/usuarios disponibles:
+                        NameWorkingMode (Name)
+                        NameIDWorkingMode (Name + ID)
+                        LDAPWorkingMode (LDAP)
+                        ADWorkingMode (Active Directory)
+                        UPWorkingMode (User and password)
+                        SSOWorkingMode (Single Sign On)
+                        
+    AuthParameters      Parámetros de autenticación (solo para modos LDAPWorkingMode y UPWorkingMode):
+                        --user=<usuario>
+                        --password=<contraseña>
+
+                        Parámetros de Single Sign On (solo para modos SSOWorkingMode):
+                        --user=<usuario>
+                        --token=<token>
+                        
+    --server            Nombre/dirección IP del servidor de Unity VCS
+
+    --port              Puerto del servidor de Unity VCS
+                        (el puerto es opcional para servidores de Cloud)
+
+    --clientconf        Ruta del fichero de configuración a crear (opcional)
+                        Este argumento puede ser una ruta completa, un nombre de fichero o un directorio.
+                        Si no se especifica este parámetro, el directorio por defecto para el fichero
+                        de configuración 'client.conf' será:
+                        * '%LocalAppData%\plastic4' en Windows
+                        * '$HOME/.plastic4' en linux/macOS
+
+                        Ejemplos:
+                        
+                        --clientconf=c:/path/to/myclient.conf
+                        (La ruta especificada se utilizará para crear el fichero de configuración del cliente)
+
+                        --clientconf=myclient.conf
+                        (Se utilizará el fichero 'myclient.conf' dentro del directorio de configuración por defecto)
+
+                        --clientconf=c:/exisitingDirectory
+                        (Se utilizará el nombre de fichero por defecto, client.conf, en el directorio especificado)
+
+== CMD_HELP_CONFIGURECLIENT ==
+Notas:
+
+    El comando 'cm configure' no podrá ser usado en las versiones Cloud Edition o DVCS Edition de Unity VCS.
+    Use de forma alternativa la aplicación 'plastic --configure'.
+    
+Ejemplos:
+
+    cm configure 
+    (ejecuta la versión interactiva del comando de configuración del cliente de Unity VCS)
+
+    cm configure --language=en --workingmode=LDAPWorkingMode --user=jack --password=01234 \
+                  --server=plastic.mymachine.com --port=8084
+    (configura el cliente de Unity VCS con los parámetros especificados, y creará el fichero
+    de configuración 'client.conf' en el directorio por defecto).
+
+    cm configure --language=en --workingmode=NameWorkingMode --server=plastic.mymachine.com \
+                  --port=8084 --clientconf=clientconf_exp.conf
+    (configura el cliente de Unity VCS con los parámetros especificados, y creará el fichero
+    de configuración 'client.conf' en el directorio especificado).
+
+== CMD_DESCRIPTION_PURGE ==
+Este comando permite al usuario inspeccionar, registrar y ejecutar purgas sobre un repositorio. Las revisiones purgadas ya no son accesibles para el repositorio en cuestión, ayudando de esta manera a liberar espacio.
+
+ADVERTENCIA: Las acciones de purga son irreversibles. Una vez son ejecutadas, ya NO podrá cargar las revisiones purgadas - ya sea cambiando su workspace o al mostrar las diferencias de una rama o changeset.
+
+== CMD_USAGE_PURGE ==
+Sintaxis:
+    cm purge <comandos> [opciones]
+
+Comandos:
+
+    - register
+    - execute
+    - show
+    - history
+    - unregister
+
+    Para obtener más información sobre cada comando:
+    cm purge <command> --^usage
+    cm purge <command> --^help
+
+== CMD_HELP_PURGE ==
+Examples:
+
+    cm purge register ".mkv" "1955-Nov-05 6:00 AM" --repository=timemachine
+    (registra una acción de purga para el repositorio 'timemachine')
+
+    cm purge history
+    (enumera el GUID y el statu de todas las acciones de purga registradas
+    anteriormente en el servidor)
+
+    cm purge show 545ec81b-23ea-462c-91f4-d7c62a6e8817 --verbose
+    (muestra en detalle los metadatos de la acción de purga dado su ID,
+    incluyendo los elementos y revisiones afectados por la purga)
+
+    cm purge execute 545ec81b-23ea-462c-91f4-d7c62a6e8817
+    (inicia una acción de purga previamente registrada)
+
+    cm purge unregister 545ec81b-23ea-462c-91f4-d7c62a6e8817
+    (las purgas que no hayan sido ejecutadas pueden eliminarse del registro)
+
+== CMD_DESCRIPTION_PURGE_REGISTER ==
+Calcula y registra una acción de purga. Se considerarán candidatas para la purga aquellas revisiones anteriores a la(s) fecha(s) seleccionadas durante el registro. Como regla, siempre preservamos revisiones etiquetadas así como al menos una revisión en todas las cabezas de rama. Puede utilizar el comando "cm purge show" para verificar las revisiones seleccionadas antes de ejecutar la purga mediante el comando "cm purge execute".
+
+== CMD_USAGE_PURGE_REGISTER ==
+Sintaxis:
+    cm purge register (<extension> <before_date>)... [--repository=<rep_spec>]
+
+Opciones:
+
+    --repository          El repositorio donde se pretende aplicar la purga.
+                          No es necesario bajo de la ruta de un espacio de trabajo salvo para
+                          elegir uno diferente.
+    extensión             Extensión del tipo de fichero a ser purgado. Note que las revisiones de
+                          elementos renombrados se considerarán también para su eliminación.
+    antes_de_fecha        Sólo aquellas revisiones anteriores a esta fecha se considerarán para
+                          su eliminación.
+
+== CMD_HELP_PURGE_REGISTER ==
+Ejemplos:
+
+    cm purge register ".mkv" "1955-Nov-05 6:00 AM"
+    (registra una acción de purga sobre las revisiones de ficheros Matroska creadas antes de una fecha)
+
+    cm purge register ".mkv" "6:00 AM"
+    (puede especificar sólamente la fecha o la hora)
+
+    cm purge register ".mkv" "6:00Z"
+    (puede especificar una hora UTC en vez de una hora local)
+
+    cm purge register ".mkv" "1955-Nov-05" --repository=timemachine
+    (puede especificar un repositorio diferente para registrar la purga)
+
+    cm purge register ".mkv" "1955-Nov-05" ".mp3" "1955-Nov-12"
+    (puede proporcionar varias parejas de extensión y fecha a la vez)
+
+== CMD_DESCRIPTION_PURGE_EXECUTE ==
+Ejecuta una acción de purga registrada previamente.
+
+ADVERTENCIA: Las acciones de purga son irreversibles. Una vez son ejecutadas, ya NO podrá cargar las revisiones purgadas - ya sea cambiando su workspace o al mostrar las diferencias de una rama o changeset. Use este comando bajo su propia responsabilidad.
+
+Asegúrese de comprobar la historia del fichero para confirmar cuáles de las revisiones/changesets no son relevantes. No dude en utilizar el comando "cm purge show" antes de ejecutar la purga para verificar que ninguna revisión inesperada esté seleccionada para su eliminación.
+
+== CMD_USAGE_PURGE_EXECUTE ==
+Sintaxis:
+    cm purge execute <purge_guid> [--server=<server>]
+
+Opciones:
+
+    --server              Permite especificar en que servidor se consultarán
+                          las acciones de purga.
+    purge_guid            El GUID devuelto por el comando "cm purge register".
+
+== CMD_HELP_PURGE_EXECUTE ==
+Ejemplos:
+
+    cm purge execute be5b9145-1bd9-4c43-bd90-f2ff727bbf13
+    (Ejecuta una purga dado su ID)
+
+    cm purge execute be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --server=myorg@cloud
+    (Puede especificar un servidor concreto si así lo necesita)
+
+== CMD_DESCRIPTION_PURGE_SHOW ==
+Proporciona un informe del estado de la purga y sus contenidos.
+
+== CMD_USAGE_PURGE_SHOW ==
+Sintaxis:
+    cm purge show <purge_guid> [--verbose | --server=<server>]
+
+Opciones:
+
+    --server              Permite especificar en que servidor se consultarán
+                          las acciones de purga.
+    --verbose             Expande el informe incluyendo los elementos y
+                          revisiones involucrados en la purga.
+    purge_guid            El GUID devuelto por el comando "cm purge register".
+
+== CMD_HELP_PURGE_SHOW ==
+Ejemplos:
+
+    cm purge show be5b9145-1bd9-4c43-bd90-f2ff727bbf13
+    (Proporciona un breve informe del estado de la purga)
+
+    cm purge show be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --verbose
+    (Proporciona información adicional por extensión purgada,
+    incluyendo elementos y revisiones)
+
+    cm purge show be5b9145-1bd9-4c43-bd90-f2ff727bbf13 --server=myorg@cloud
+    (Puede 
